@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct Node {
+	char data;
+	struct Node *next;
+}Node,*LinkNode;
+
+typedef char Elemtype;
+
+void InitList(LinkNode(*L)) {           //函数--初始化链表
+	(*L) = malloc(sizeof(Node));         //L一定为二级指针
+	(*L)->next = NULL;
+}
+
+void AddList(LinkNode(*L), Elemtype e) {        //函数--添加数据
+	LinkNode rear=(*L);                          
+	while (rear->next) {
+		rear = rear->next;                     //rear指针指向最后一个节点
+	}
+	LinkNode newNode = malloc(sizeof(Node));          //分配新节点空间,newNode指向该节点
+	newNode->data = e;
+	newNode->next = rear->next;
+	rear->next = newNode;                   
+}
+
+void CreateList(LinkNode(*L)) {                  //函数--创建链表
+	Elemtype e;             
+	char operation;
+	printf("是否继续创建数据（Y/N）");
+	while ((operation = getchar()) == 'Y') {
+		getchar();
+		printf("输入要创建的数据\n");
+		scanf("%c", &e);
+		getchar();
+		AddList(L, e);                              //传入二级指针L,添加数据
+		printf("是否继续创建数据（Y/N）");
+	}
+	getchar();
+}
+
+void Search(LinkNode(*L), Elemtype e) {
+	LinkNode p = (*L)->next;
+	while (p) {
+		if (p->data == e) {
+			printf("找到数据");
+			return;
+		}
+	}
+	printf("找不到该数据");
+}
+
+void Traverse(LinkNode(*L)) {                    //函数--遍历输出
+	LinkNode p = (*L)->next;
+	printf("所有数据如下：\n");
+	while (p) {
+		printf("%c", p->data);
+		p = p->next;
+	}
+}
+
+void SortList(LinkNode(*L)) {                  //函数--排序
+	LinkNode i, j;
+	Node temp;
+	for (i = (*L)->next;i->next != NULL;i = i->next){      //冒泡排序
+		for (j = i;j ->next!= NULL;j = j->next){
+			if (j->data > j->next->data){
+				temp.data = j->data;
+				j->data = j->next->data;
+				j->next->data = temp.data;
+			}
+		}
+	}
+}
+
+void FreeList(LinkNode(*L)) {                     //函数--释放链表空间
+	LinkNode pre, nex;                      //next指针比pre指针领先一个节点                  
+	pre = (*L);
+	nex = (*L)->next;
+	while (nex) {
+		free(pre);                          //释放前一个节点
+		pre = nex;
+		nex = pre->next;                    //pre,nex指针分别向后移动一个节点
+	}
+	free(pre);                             //释放最后一个节点
+}
+
+int main() {
+	LinkNode L;                     //定义链表指针（未分配空间）
+	char e;
+	InitList(&L);                   //参数为指针的指针（二级指针）
+	CreateList(&L);
+	SortList(&L);
+	printf("输入要查找的数据");
+	e = getchar();
+	Search(&L,e);
+	Traverse(&L);
+	FreeList(&L);
+	return 0;
+}
